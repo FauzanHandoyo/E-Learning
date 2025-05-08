@@ -1,17 +1,15 @@
 # 📘 PA-SBD-10: Sistem Manajemen Kursus Online
 
-## 👨‍👩‍👦‍👦 Kelompok 10 - Proyek Akhir Sistem Basis Data
+## Kelompok 10 - Proyek Akhir Sistem Basis Data
 
-| Nama Lengkap                                   | NPM         | Tugas                                                   |
-|------------------------------------------------|-------------|----------------------------------------------------------|
-| **Fadhlureza Sebastian**                       | *(isi NPM)* | Frontend Developer (User Interface, Konsumsi API)       |
-| **Fido Wahyu Choirulinsan**                    | *(isi NPM)* | Backend & API Developer (Node.js, Express, JWT)         |
-| **Tri Yoga Arsyad**                            | *(isi NPM)* | Database & ERD Specialist (PostgreSQL, ORM, Redis)      |
-| **Fauzan Farras Hakim Budi Handoyo**           | *(isi NPM)* | Dokumentasi & Deployment (UML, ReadMe, Deploy System)   |
+### Anggota Kelompok:
+- Fadhlureza Sebastian  
+- Fido Wahyu Choirulinsan  
+- Tri Yoga Arsyad  
+- Fauzan Farras Hakim Budi Handoyo  
 
----
 
-## 📌 Deskripsi Proyek
+## Deskripsi Proyek
 
 **PA-SBD-10** adalah proyek akhir mata kuliah Sistem Basis Data yang bertujuan membangun sebuah **aplikasi sistem manajemen kursus online**. Sistem ini mendukung aktivitas belajar-mengajar secara daring dengan dua peran utama: **pelajar** dan **instruktur**.
 
@@ -24,7 +22,7 @@ Fitur utama meliputi:
 
 ---
 
-## 🎯 Tujuan
+## Tujuan
 
 - Menerapkan perancangan basis data relasional
 - Menghubungkan backend dan frontend melalui RESTful API
@@ -33,7 +31,7 @@ Fitur utama meliputi:
 
 ---
 
-## ⚙️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 - **Frontend**: React.js *(atau Flutter)*
 - **Backend**: Node.js + Express
@@ -44,26 +42,7 @@ Fitur utama meliputi:
 
 ---
 
-## 📂 Struktur Direktori
-PA-SBD-15/
-├── backend/
-│ ├── controllers/
-│ ├── routes/
-│ ├── models/
-│ └── app.js
-├── frontend/
-│ ├── pages/
-│ ├── components/
-│ └── App.js
-├── database/
-│ ├── ERD.png
-│ ├── schema.sql
-│ └── seed.sql
-├── docs/
-│ ├── README.md
-│ ├── UML.drawio
-│ └── Presentasi_Final.pdf
-
+## Struktur Direktori
 
 ---
 
