@@ -46,7 +46,7 @@ Fitur utama meliputi:
 
 ---
 
-## 🚀 Cara Menjalankan Proyek
+##  Cara Menjalankan Proyek
 
 ```bash
 # Clone repository:
