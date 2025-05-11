@@ -53,7 +53,7 @@ Fitur utama meliputi:
 git clone https://github.com/FauzanHandoyo/PA-SBD-15.git
 
 # Masuk ke folder backend dan install dependensi:
-cd PA-SBD-15/backend
+cd PA-SBD-15/Backend
 npm install
 
 # Menjalankan server backend:
