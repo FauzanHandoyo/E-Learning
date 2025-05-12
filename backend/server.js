@@ -1,0 +1,30 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const pool = require('./db'); // Import the centralized db.js file
+const userRoutes = require('./src/routes/userRoutes'); // Import user routes
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(express.json());
+
+// Test route
+app.get('/', (req, res) => {
+  res.send('🎉 Online E-Learning Backend is running!');
+});
+
+// User routes
+app.use('/api/users', userRoutes); // Mount user routes
+
+// Test database connection
+pool.connect()
+  .then(() => console.log('Connected to PostgreSQL database'))
+  .catch((err) => console.error('Failed to connect to PostgreSQL:', err));
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server berjalan di http://localhost:${PORT}`);
+});
