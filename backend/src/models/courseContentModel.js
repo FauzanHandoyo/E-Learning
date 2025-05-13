@@ -11,7 +11,7 @@ const CourseContent = {
         return rows[0];
     },
 
-    // Get all content for a specific course
+    // Get all content for a specific courses
     findByCourseId: async (course_id) => {
         const query = `
             SELECT * 
