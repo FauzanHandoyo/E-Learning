@@ -57,6 +57,6 @@
 
 ## 💻 Progress Report
 
-> Bagian ini akan diisi secara berkala sesuai dengan perkembangan pengerjaan proyek.
+> Bagian ini akan diisi secara berkala sesuai dengan perkembangan pengerjaan proyek.q
 
 ---
