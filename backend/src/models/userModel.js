@@ -1,4 +1,6 @@
 const pool = require('../../db'); // Import the pool from db.js
+const bcrypt = require('bcrypt'); // Import bcrypt for password hashing
+
 
 const User = {
   findAll: async () => {
@@ -14,29 +16,79 @@ const User = {
   },
 
   create: async ({ email, username, password, role }) => {
-    const query = `
-      INSERT INTO users (email, username, password, role)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *`;
-    const { rows } = await pool.query(query, [email, username, password, role]);
-    return rows[0];
-  },
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-  update: async (id, { email, username, password, role }) => {
+    const query = `
+      INSERT INTO users (email, username, password, role, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, NOW(), NOW())
+      RETURNING *`;
+    const { rows } = await pool.query(query, [email, username, hashedPassword, role]);
+    return rows[0];
+},
+
+  update: async (id, fields) => {
+    // Check if the password is being updated
+    if (fields.password) {
+        const salt = await bcrypt.genSalt(10);
+        fields.password = await bcrypt.hash(fields.password, salt);
+    }
+
+    const setClause = Object.keys(fields)
+        .map((key, index) => `${key} = $${index + 1}`)
+        .join(', ');
+
+    const values = Object.values(fields);
+    values.push(id); // Add the `id` as the last parameter
+
     const query = `
       UPDATE users
-      SET email = $1, username = $2, password = $3, role = $4
-      WHERE id = $5
+      SET ${setClause}, updated_at = NOW()
+      WHERE id = $${values.length}
       RETURNING *`;
-    const { rows } = await pool.query(query, [email, username, password, role, id]);
+    const { rows } = await pool.query(query, values);
     return rows[0];
-  },
+},
 
   delete: async (id) => {
     const query = 'DELETE FROM users WHERE id = $1 RETURNING *';
     const { rows } = await pool.query(query, [id]);
     return rows[0];
   },
+
+  update: async (id, fields) => {
+    const setClause = Object.keys(fields)
+        .map((key, index) => `${key} = $${index + 1}`)
+        .join(', ');
+
+    const values = Object.values(fields);
+    values.push(id); // Add the `id` as the last parameter
+
+    const query = `
+      UPDATE users
+      SET ${setClause}
+      WHERE id = $${values.length}
+      RETURNING *`;
+    const { rows } = await pool.query(query, values);
+    return rows[0];
+    },
+
+    getCoursesHeld: async (instructorId) => {
+    const query = `
+      SELECT 
+        c.id AS course_id, 
+        c.title AS course_title, 
+        c.description, 
+        c.price, 
+        c.created_at, 
+        u.username AS instructor_name
+      FROM courses c
+      JOIN users u ON c.instructor_id = u.id
+      WHERE c.instructor_id = $1`;
+    const { rows } = await pool.query(query, [instructorId]);
+    return rows;
+    },
 };
 
 module.exports = User;

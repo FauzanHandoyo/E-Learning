@@ -2,6 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const pool = require('./db'); // Import the centralized db.js file
 const userRoutes = require('./src/routes/userRoutes'); // Import user routes
+const instructorRoutes = require('./src/routes/instructorRoutes'); // Import instructor routes
+const courseRoutes = require('./src/routes/coursesRoutes'); // Import course routes
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +20,8 @@ app.get('/', (req, res) => {
 
 // User routes
 app.use('/api/users', userRoutes); // Mount user routes
+app.use('/api/instructors', instructorRoutes); // Mount instructor routes
+app.use('/api/courses', courseRoutes); // Mount course routes
 
 // Test database connection
 pool.connect()
