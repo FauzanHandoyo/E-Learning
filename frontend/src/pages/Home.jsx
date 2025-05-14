@@ -4,7 +4,7 @@ import { BookOpenIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 export default function Home() {
   return (
     <div className="fixed inset-0 min-h-screen w-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-green-100">
-      {/* Navigation Bar */}
+      {/* Navigation Bar
       <div className="fixed top-0 left-0 w-full bg-white bg-opacity-90 shadow-md z-10">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <Link to="/" className="text-2xl font-bold text-blue-600">E-Learning</Link>
@@ -15,7 +15,7 @@ export default function Home() {
             <Link to="/register" className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium">Register</Link>
           </div>
         </div>
-      </div>
+      </div> */}
       
       {/* Decorative gradient circles */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full opacity-30 blur-2xl -z-10 animate-pulse"></div>
@@ -38,7 +38,7 @@ export default function Home() {
             <p className="text-gray-600 mb-8 text-center">Start learning today with our curated courses and interactive materials.</p>
             <Link 
               to="/login" 
-              className="inline-block bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow hover:from-blue-600 hover:to-blue-800 transition-all duration-200"
+              className="inline-block bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow hover:from-blue-600 hover:to-blue-800 hover:text-white hover:scale-105 transition-all duration-200"
             >
               Login as Student
             </Link>
@@ -49,7 +49,7 @@ export default function Home() {
             <p className="text-gray-600 mb-8 text-center">Share your expertise and inspire learners around the globe.</p>
             <Link
               to="/login" 
-              className="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-xl font-semibold shadow hover:from-green-600 hover:to-green-800 transition-all duration-200"
+              className="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-xl font-semibold shadow hover:from-green-600 hover:to-green-800 hover:text-white hover:scale-105 transition-all duration-200"
             >
               Login as Instructor
             </Link>
