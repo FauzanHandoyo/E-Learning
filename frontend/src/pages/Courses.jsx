@@ -1,4 +1,4 @@
-// import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import CourseCard from '../components/CourseCard';
 import { useEffect, useState } from 'react';
@@ -45,15 +45,15 @@ export default function Courses() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="container mx-auto px-4 py-24"
+      className="w-full min-h-screen px-0 py-24 bg-white"
     >
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Semua Kursus</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Semua Kursus</h1>
       
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8"
       >
         {courses.map((course, index) => (
           <motion.div
