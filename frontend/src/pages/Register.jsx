@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import register from '../assets/register.svg';
+import registersvg from '../assets/register.svg';
+import google from '../assets/google.svg';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -89,7 +90,7 @@ export default function Register() {
         <div className="w-full max-w-md">
           <div className="mb-8">
             <div className="inline-block p-4 rounded-full bg-green-100 mb-4">
-              <img src={register} alt="Register" className="h-16 w-16 mx-auto" />
+              <img src={registersvg} alt="Register" className="h-16 w-16 mx-auto" />
             </div>
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
             <p className="text-gray-600">Join our platform and start your learning journey</p>
@@ -97,9 +98,7 @@ export default function Register() {
           
           <div className="flex justify-center space-x-4 mb-8">
             <button type="button" className="flex items-center justify-center p-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-all w-full text-gray-800 hover:border-green-500">
-              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.908 8.908 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z" fill="#4285F4"/>
-              </svg>
+              <img src={google} alt="Google" className="h-5 w-5 mr-2" />
               <span>Sign up with Google</span>
             </button>
           </div>
@@ -122,7 +121,7 @@ export default function Register() {
                 <input
                   type="text"
                   name="fullName"
-                  placeholder="John Doe"
+                  placeholder="Your Name"
                   className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-white text-gray-800"
                   value={formData.fullName}
                   onChange={handleChange}

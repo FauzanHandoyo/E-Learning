@@ -3,7 +3,7 @@ import { BookOpenIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export default function Home() {
   return (
-    <div className="fixed inset-0 min-h-screen w-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-green-100">
+    <div className="min-h-screen w-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-green-100">
       {/* Navigation Bar
       <div className="fixed top-0 left-0 w-full bg-white bg-opacity-90 shadow-md z-10">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -55,6 +55,26 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        
+        <div className="bg-white bg-opacity-90 p-10 flex-1 shadow-2xl hover:shadow-blue-200 transition-all duration-300 hover:-translate-y-1 animate-fadeInUp delay-200 flex flex-col items-center border-t border-b border-blue-100">
+            <UserGroupIcon className="h-16 w-16 text-green-500 mb-6 drop-shadow-md animate-bounce" />
+            <h2 className="text-3xl font-bold mb-3 text-gray-700">Don't Have An Account</h2>
+            <p className="text-gray-600 mb-8 text-center">Create your account today and unlock the full potential of our platform.</p>
+            <Link
+              to="/register"
+              className="inline-block bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-xl font-semibold shadow hover:from-blue-700 hover:to-green-700 hover:text-white hover:scale-105 transition-all duration-200"
+            >
+              Register Now
+            </Link>
+        </div>
+
+        <footer className="w-full bg-white bg-opacity-90 shadow-md py-4">
+        <div className="container mx-auto text-center">
+          <p className="text-gray-600">© 2025 E-Learning. All rights reserved.</p>
+          <p className="text-gray-600">Made by Group 10</p>
+        </div>
+      </footer>
+      
       </div>
     </div>
   );

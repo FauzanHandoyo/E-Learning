@@ -60,6 +60,7 @@
 
 .nav-link:hover {
   color: #2563eb;
+  transform: scale(1.05);
 }
 
 /* Mobile Responsive Styles */
