@@ -25,29 +25,37 @@ const createCourse = async (req, res) => {
 
 // Get all courses
 const getAllCourses = async (req, res) => {
-    try {
-        const courses = await Courses.findAll();
-        res.status(200).json(courses);
-    } catch (error) {
-        console.error('Error fetching courses:', error);
-        res.status(500).json({ message: 'Error fetching courses', error });
-    }
+  try {
+    console.log('Fetching courses from database...');
+    const courses = await Courses.findAll(); // Replace with your database query
+    console.log('Courses fetched:', courses);
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).json({ message: 'Error fetching courses', error });
+  }
 };
 
 // Get a course by ID
 const getCourseById = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const course = await Courses.findById(id);
-        if (!course) {
-            return res.status(404).json({ message: 'Course not found' });
-        }
-        res.status(200).json(course);
-    } catch (error) {
-        console.error('Error fetching course:', error);
-        res.status(500).json({ message: 'Error fetching course', error });
+  try {
+    // Validate the ID from the request parameters
+    const courseId = parseInt(req.params.id, 10);
+    if (isNaN(courseId)) {
+      return res.status(400).json({ message: 'Invalid course ID' });
     }
+
+    // Call the findById method with the validated ID
+    const course = await Courses.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    res.status(200).json(course);
+  } catch (error) {
+    console.error('Error fetching course:', error);
+    res.status(500).json({ message: 'Failed to fetch course' });
+  }
 };
 
 const updateCourse = async (req, res) => {
@@ -74,9 +82,31 @@ const updateCourse = async (req, res) => {
     }
 };
 
+const getEnrolledCourses = async (req, res) => {
+  try {
+    // Get userId from query parameters or request body
+    const userId = req.query.userId || req.body.userId;
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required to fetch enrolled courses.' });
+    }
+
+    console.log('Fetching enrolled courses for user ID:', userId); // Log the user ID
+
+    const courses = await Courses.getEnrolledCourses(userId); // Fetch enrolled courses
+    console.log('Enrolled courses fetched:', courses); // Log the fetched courses
+
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Error fetching enrolled courses:', error); // Log the error
+    res.status(500).json({ message: 'Failed to fetch enrolled courses' });
+  }
+};
+
 module.exports = {
     updateCourse,
     createCourse,
     getAllCourses,
     getCourseById,
+    getEnrolledCourses
 };

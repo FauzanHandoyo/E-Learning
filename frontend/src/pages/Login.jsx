@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import login from '../assets/login.svg';
+import loginsvg from '../assets/login.svg'
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ 
     email: '', 
     password: '' 
   });
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(credentials);
-      navigate('/dashboard');
+      await login(credentials); // The redirection is handled in AuthContext.jsx
     } catch (error) {
       console.error('Login error:', error);
       alert('Login failed: ' + error.message);
@@ -82,7 +81,7 @@ export default function Login() {
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 lg:px-16 xl:px-24 bg-white">
         <div className="w-full max-w-md">
           <div className="inline-block p-4 rounded-full bg-blue-100 mb-4">
-            <img src={login} alt="Login" className="h-16 w-16 mx-auto" />
+           <img src={loginsvg} alt="Login" className="h-16 w-16 mx-auto" /> {/* Use login.svg */}
           </div>
           <h2 className="text-3xl font-bold text-gray-800 mb-2">Log In</h2>
           <p className="text-gray-600 mb-8">Please enter your credentials to continue</p>

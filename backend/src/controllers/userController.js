@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const pool = require('../../db'); 
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -12,15 +13,24 @@ const getAllUsers = async (req, res) => {
 
 // Get user by ID
 const getUserById = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching user', error });
+  try {
+    // Validate the ID from the request parameters
+    const userId = parseInt(req.params.id, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
     }
+
+    // Call the findById method with the validated ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Failed to fetch user' });
+  }
 };
 
 // Create a new user
@@ -77,7 +87,17 @@ const getCoursesHeldByInstructor = async (req, res) => {
     }
 };
 
-
+// Fetch enrolled courses for a user
+const getEnrolledCourses = async (req, res) => {
+  try {
+    const userId = req.user.id; // Ensure `req.user` is populated correctly
+    const courses = await User.getEnrolledCourses(userId); // Use the User model method
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Error fetching enrolled courses:', error);
+    res.status(500).json({ message: 'Failed to fetch enrolled courses' });
+  }
+};
 
 module.exports = {
     getAllUsers,
@@ -86,4 +106,5 @@ module.exports = {
     updateUser,
     deleteUser,
     getCoursesHeldByInstructor,
+    getEnrolledCourses
 };

@@ -21,22 +21,43 @@ export function AuthProvider({ children }) {
     };
     
     checkAuth();
-  }, []);
+  }, []); 
+  
+  const login = async (credentials) => {
+    try {
+      const response = await api.post('/auth/login', credentials);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
 
- const login = async (credentials) => {
-  const response = await api.post('/auth/login', credentials);
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    setUser(response.data.user);
-    navigate(response.data.user.role === 'instructor' ? '/instructor' : '/student');
+      // Redirect based on user role
+      if (response.data.user.role === 'instructor') {
+        navigate('/instructor');
+      } else if (response.data.user.role === 'student') {
+        navigate('/student');
+      } else {
+        throw new Error('Invalid user role');
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Login error:', error.response?.data?.message || error.message);
+      throw new Error(error.response?.data?.message || 'Login failed');
+    }
   };
-
   const register = async (userData) => {
-    const response = await api.post('/auth/register', userData);
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    setUser(response.data.user);
-    navigate(response.data.user.role === 'instructor' ? '/instructor' : '/student');
+    try {
+      // Update the endpoint to include '/api'
+      const response = await api.post('/auth/register', userData);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
+      navigate(response.data.user.role === 'instructor' ? '/instructor' : '/student');
+      return response.data;
+    } catch (error) {
+      console.error('Registration error:', error.response?.data?.message || error.message);
+      throw new Error(error.response?.data?.message || 'Registration failed');
+    }
   };
 
   const logout = () => {

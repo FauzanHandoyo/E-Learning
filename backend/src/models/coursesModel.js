@@ -34,6 +34,23 @@ const Courses = {
         const { rows } = await pool.query(query, [title, description, price, id]);
         return rows[0];
     },
+
+    getEnrolledCourses: async (userId) => {
+        try {
+            const query = `
+                SELECT c.*
+                FROM courses c
+                JOIN enrollments e ON c.id = e.course_id
+                WHERE e.user_id = $1
+            `;
+            const { rows } = await pool.query(query, [userId]); // Fetch courses from the database
+            return rows;
+        } catch (error) {
+            console.error('Error in getEnrolledCourses:', error); // Log the error
+            throw error;
+        }
+    },
+    
 };
 
 module.exports = Courses;

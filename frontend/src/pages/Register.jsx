@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import register from '../assets/register.svg';
+import registersvg from '../assets/register.svg';
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    fullName: '',
+    username: '',
     email: '',
     password: '',
     role: 'student', // Default role
@@ -89,7 +89,7 @@ export default function Register() {
         <div className="w-full max-w-md">
           <div className="mb-8">
             <div className="inline-block p-4 rounded-full bg-green-100 mb-4">
-              <img src={register} alt="Register" className="h-16 w-16 mx-auto" />
+              <img src={registersvg} alt="Register" className="h-16 w-16 mx-auto" />
             </div>
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
             <p className="text-gray-600">Join our platform and start your learning journey</p>
@@ -111,8 +111,7 @@ export default function Register() {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="relative">
-              <label className="text-sm font-medium text-gray-700 block mb-1">Full Name</label>
+            <div className="relative">              <label className="text-sm font-medium text-gray-700 block mb-1">Username</label>
               <div className="flex items-center">
                 <span className="absolute left-3 text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,10 +120,10 @@ export default function Register() {
                 </span>
                 <input
                   type="text"
-                  name="fullName"
-                  placeholder="John Doe"
+                  name="username"
+                  placeholder="johndoe"
                   className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-white text-gray-800"
-                  value={formData.fullName}
+                  value={formData.username}
                   onChange={handleChange}
                   required
                 />

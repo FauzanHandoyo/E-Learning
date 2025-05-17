@@ -8,6 +8,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import InstructorDashboard from './pages/InstructorDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './pages/NotFound';
+import EnrolledCourses from './pages/EnrolledCourses'; // New import
+import UserProfile from './pages/ProfilePage';
 
 export default function App() {
   return (
@@ -21,9 +23,15 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
+             {/* Protected Routes for all authenticated users */}
+            <Route element={<ProtectedRoute allowedRoles={['student', 'instructor']} />}>
+              <Route path="/profile" element={<UserProfile />} />
+            </Route>
+            
             {/* Protected Student Routes */}
             <Route element={<ProtectedRoute allowedRoles={['student']} />}>
               <Route path="/student" element={<StudentDashboard />} />
+              <Route path="/enrolled" element={<EnrolledCourses />} /> {/* New route */}
             </Route>
 
             {/* Protected Instructor Routes */}

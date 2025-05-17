@@ -6,12 +6,19 @@ const instructorRoutes = require('./src/routes/instructorRoutes'); // Import ins
 const courseRoutes = require('./src/routes/coursesRoutes'); // Import course routes
 const enrollmentRoutes = require('./src/routes/enrollmentRoutes'); // Import enrollment routes
 const courseContentRoutes = require('./src/routes/courseContentRoutes'); // Import course content routes
+const cors = require('cors');
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Add CORS middleware here - before routes, after express.json()
+app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  credentials: true
+}));
 app.use(express.json());
 
 // Test route
