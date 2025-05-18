@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar/Navbar'; // Pastikan path sesuai struktur folder
 import Home from './pages/Home';
@@ -10,6 +10,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './pages/NotFound';
 import EnrolledCourses from './pages/EnrolledCourses'; // New import
 import UserProfile from './pages/ProfilePage';
+import InstructorCourses from './pages/instructor/InstructorCourses';
+import CreateCourse from './pages/instructor/CreateCourse';
 
 export default function App() {
   return (
@@ -26,17 +28,20 @@ export default function App() {
              {/* Protected Routes for all authenticated users */}
             <Route element={<ProtectedRoute allowedRoles={['student', 'instructor']} />}>
               <Route path="/profile" element={<UserProfile />} />
-            </Route>
-            
-            {/* Protected Student Routes */}
-            <Route element={<ProtectedRoute allowedRoles={['student']} />}>
-              <Route path="/student" element={<StudentDashboard />} />
-              <Route path="/enrolled" element={<EnrolledCourses />} /> {/* New route */}
+              <Route path="/main" element={<StudentDashboard />} /> {/* Renamed from '/student' to '/main' */}
+              <Route path="/enrolled" element={<EnrolledCourses />} />
             </Route>
 
-            {/* Protected Instructor Routes */}
+            {/* Keep the original '/student' route for backward compatibility */}
+            <Route element={<ProtectedRoute allowedRoles={['student', 'instructor']} />}>
+              <Route path="/student" element={<Navigate to="/main" replace />} />
+            </Route>
+
+            {/* Redirect instructor dashboard to main */}
             <Route element={<ProtectedRoute allowedRoles={['instructor']} />}>
-              <Route path="/instructor" element={<InstructorDashboard />} />
+              <Route path="/instructor" element={<Navigate to="/main" replace />} />
+              <Route path="/instructor/courses" element={<InstructorCourses />} />
+              <Route path="/instructor/create-course" element={<CreateCourse />} />
             </Route>
 
             {/* 404 Not Found */}

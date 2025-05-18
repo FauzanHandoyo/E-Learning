@@ -23,13 +23,20 @@ const createCourse = async (req, res) => {
     }
 };
 
-// Get all courses
 const getAllCourses = async (req, res) => {
   try {
     console.log('Fetching courses from database...');
-    const courses = await Courses.findAll(); // Replace with your database query
-    console.log('Courses fetched:', courses);
-    res.status(200).json(courses);
+    
+    // Use a JOIN query to include instructor information
+    const query = `
+      SELECT c.*, u.username as instructor_name 
+      FROM courses c
+      JOIN users u ON c.instructor_id = u.id
+    `;
+    
+    const { rows } = await pool.query(query);
+    console.log('Courses fetched:', rows);
+    res.status(200).json(rows);
   } catch (error) {
     console.error('Error fetching courses:', error);
     res.status(500).json({ message: 'Error fetching courses', error });
@@ -82,31 +89,58 @@ const updateCourse = async (req, res) => {
     }
 };
 
+// Update the getEnrolledCourses function or add it if it doesn't exist
 const getEnrolledCourses = async (req, res) => {
   try {
-    // Get userId from query parameters or request body
-    const userId = req.query.userId || req.body.userId;
-
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required to fetch enrolled courses.' });
-    }
-
-    console.log('Fetching enrolled courses for user ID:', userId); // Log the user ID
-
-    const courses = await Courses.getEnrolledCourses(userId); // Fetch enrolled courses
-    console.log('Enrolled courses fetched:', courses); // Log the fetched courses
-
-    res.status(200).json(courses);
+    const userId = req.user.id; // Get from JWT token
+    
+    const query = `
+      SELECT c.*, u.username as instructor_name, e.progress
+      FROM enrollments e
+      JOIN courses c ON e.course_id = c.id
+      JOIN users u ON c.instructor_id = u.id
+      WHERE e.user_id = $1
+    `;
+    
+    const { rows } = await pool.query(query, [userId]);
+    res.status(200).json(rows);
   } catch (error) {
-    console.error('Error fetching enrolled courses:', error); // Log the error
+    console.error('Error fetching enrolled courses:', error);
     res.status(500).json({ message: 'Failed to fetch enrolled courses' });
   }
+  
 };
+
+const getInstructorCourses = async (req, res) => {
+  try {
+    const instructorId = req.user.id;
+    
+    // Use a JOIN query to get more information about the courses
+    const query = `
+      SELECT c.*, 
+             COUNT(DISTINCT e.user_id) as students_count 
+      FROM courses c
+      LEFT JOIN enrollments e ON c.id = e.course_id
+      WHERE c.instructor_id = $1
+      GROUP BY c.id
+      ORDER BY c.created_at DESC
+    `;
+    
+    const { rows } = await pool.query(query, [instructorId]);
+    
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching instructor courses:', error);
+    res.status(500).json({ message: 'Failed to fetch instructor courses' });
+  }
+};
+
 
 module.exports = {
     updateCourse,
     createCourse,
     getAllCourses,
     getCourseById,
-    getEnrolledCourses
+    getEnrolledCourses,
+    getInstructorCourses
 };

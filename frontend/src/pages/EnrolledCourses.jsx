@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { fetchEnrolledCourses } from '../services/api';  // Import the helper function
+import api from '../services/api';
 import CourseCard from '../components/CourseCard';
 
 export default function EnrolledCourses() {
@@ -20,8 +20,8 @@ export default function EnrolledCourses() {
     const loadEnrolledCourses = async () => {
       try {
         setLoading(true);
-        const data = await fetchEnrolledCourses();
-        setCourses(data);
+        const response = await api.get('/users/enrolled');
+        setCourses(response.data);
         setLoading(false);
       } catch (err) {
         console.error('Error loading courses:', err);
@@ -64,7 +64,7 @@ export default function EnrolledCourses() {
         <div className="text-center py-12">
           <p className="text-xl text-gray-600 mb-4">You haven't enrolled in any courses yet.</p>
           <button
-            onClick={() => navigate('/courses')}
+            onClick={() => navigate('/main')}
             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
           >
             Browse Courses
@@ -74,9 +74,10 @@ export default function EnrolledCourses() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map(course => (
             <CourseCard 
-              key={course.id} 
+              key={course.id || course.course_id} 
               course={course}
-              enrolled={true}
+              isEnrolled={true}
+              progress={course.progress || 0}
             />
           ))}
         </div>
