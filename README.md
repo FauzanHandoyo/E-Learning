@@ -6,15 +6,16 @@ Sistem Pengelolaan Kursus Online adalah tugas akhir dari pelajaran Sistem Basis 
 
 # 💻 Tech Stack:
 
-![Postgres](https://img.shields.io/badge/postgres-316192?style=flat-square&logo=postgresql&logoColor=white)
-![JavaScript](https://img.shields.io/badge/javascript-323330?style=flat-square&logo=javascript&logoColor=F7DF1E)
-![TypeScript](https://img.shields.io/badge/typescript-007ACC?style=flat-square&logo=typescript&logoColor=white)
-![Express.js](https://img.shields.io/badge/express.js-404d59?style=flat-square&logo=express&logoColor=61DAFB)
-![JWT](https://img.shields.io/badge/JWT-black?style=flat-square&logo=JSON%20web%20tokens&logoColor=white)
-![NPM](https://img.shields.io/badge/NPM-000000?style=flat-square&logo=npm&logoColor=white)
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=flat-square&logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/react-20232a?style=flat-square&logo=react&logoColor=61DAFB)
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
+![Neon](https://img.shields.io/badge/database-Neon-00E599?style=for-the-badge&logo=neon&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23232F3E.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![JWT](https://img.shields.io/badge/JWT-%23000000.svg?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
+![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-%236DA55F.svg?style=for-the-badge&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
 
 # Deskripsi Proyek
 Platform ini adalah aplikasi berbasis web (yang juga dapat diadaptasi untuk versi mobile) yang menawarkan fitur-fitur utama untuk mendukung kegiatan belajar secara online.
