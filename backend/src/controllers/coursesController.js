@@ -3,7 +3,7 @@ const pool = require('../../db'); // Import the database connection
 
 // Create a new course
 const createCourse = async (req, res) => {
-    const { title, description, instructor_id, price } = req.body;
+    const { title, description, instructor_id, price, category_id } = req.body;
 
     try {
         // Validate that the instructor exists and has the role 'instructor'
@@ -15,7 +15,7 @@ const createCourse = async (req, res) => {
         }
 
         // Insert the course into the database
-        const course = await Courses.create({ title, description, instructor_id, price });
+        const course = await Courses.create({ title, description, instructor_id, price, category_id });
         res.status(201).json({ message: 'Course created successfully.', course });
     } catch (error) {
         console.error('Error creating course:', error);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -7,12 +7,28 @@ export default function CreateCourse() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: ''
+    price: '',
+    category_id: '' // Add category_id field
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [categories, setCategories] = useState([]); // State for categories
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch categories when component mounts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get('/categories');
+        setCategories(response.data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +57,11 @@ export default function CreateCourse() {
       return;
     }
 
+    if (!formData.category_id) {
+      setError('Please select a category');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
@@ -49,7 +70,8 @@ export default function CreateCourse() {
       const courseData = {
         ...formData,
         instructor_id: user.id,
-        price: parseFloat(formData.price)
+        price: parseFloat(formData.price),
+        category_id: parseInt(formData.category_id)
       };
 
       await api.post('/courses', courseData);
@@ -63,6 +85,9 @@ export default function CreateCourse() {
       setLoading(false);
     }
   };
+
+  // Helper function for providing category selection tips
+  const [showCategoryTips, setShowCategoryTips] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -79,7 +104,27 @@ export default function CreateCourse() {
           <div className="mb-6">
             <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
               Course Title*
+              <span 
+                className="ml-1 text-blue-500 cursor-pointer hover:text-blue-700"
+                onClick={() => setShowCategoryTips(prev => !prev)}
+              >
+                <i className="fas fa-info-circle"></i> Tips
+              </span>
             </label>
+            
+            {showCategoryTips && (
+              <div className="mb-3 p-3 bg-blue-50 text-sm rounded-lg">
+                <h4 className="font-semibold text-blue-700 mb-1">Tips for a great course title:</h4>
+                <ul className="list-disc pl-5 text-gray-700">
+                  <li>Keep it clear and concise (50-60 characters)</li>
+                  <li>Include keywords related to the subject</li>
+                  <li>Highlight the specific skills students will learn</li>
+                  <li>Avoid all caps or excessive punctuation</li>
+                  <li>Example: "Complete JavaScript: From Fundamentals to Advanced Concepts"</li>
+                </ul>
+              </div>
+            )}
+            
             <input
               type="text"
               id="title"
@@ -90,6 +135,28 @@ export default function CreateCourse() {
               placeholder="e.g., Complete Web Development Bootcamp"
               required
             />
+          </div>
+          
+          {/* Add category selection */}
+          <div className="mb-6">
+            <label htmlFor="category_id" className="block text-gray-700 font-medium mb-2">
+              Category*
+            </label>
+            <select
+              id="category_id"
+              name="category_id"
+              value={formData.category_id}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select a category</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           
           <div className="mb-6">

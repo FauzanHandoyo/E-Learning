@@ -19,7 +19,7 @@ export default function InstructorCourses() {
         setCourses(response.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching instructor courses:', err);
+        console.error('Error f etching instructor courses:', err);
         setError('Failed to load your courses. Please try again.');
         setLoading(false);
       }

@@ -8,6 +8,8 @@ const instructorRoutes = require('./src/routes/instructorRoutes'); // Import ins
 const courseRoutes = require('./src/routes/coursesRoutes'); // Import course routes
 const enrollmentRoutes = require('./src/routes/enrollmentRoutes'); // Import enrollment routes
 const courseContentRoutes = require('./src/routes/courseContentRoutes'); // Import course content routes
+const categoryRoutes = require('./src/routes/categoryRoutes'); // Import category routes
+
 // Load environment variables
 dotenv.config();
 
@@ -37,7 +39,7 @@ app.use('/api/instructors', instructorRoutes); // Mount instructor routes
 app.use('/api/courses', courseRoutes); // Mount course routes
 app.use('/api/enrollments', enrollmentRoutes); // Mount enrollment routes
 app.use('/api/course-contents', courseContentRoutes); // Mount course content routes
-
+app.use('/api/categories', categoryRoutes); // Mount category routes
 
 // Test database connection
 pool.connect()
