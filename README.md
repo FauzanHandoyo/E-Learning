@@ -56,17 +56,17 @@ Flowchart
 Clone this repository
 
 ```
-git clone 
+git clone https://github.com/FauzanHandoyo/E-Learning.git
 ```
 
 ## Frontend
 
 - Ensure You’re on the right folder
 
-  <img width="153" alt="image" src="https://github.com/SistemBasisData2023/QueueEase/assets/113244831/5bc53ff0-9cb4-4b98-b76f-2fb0b4333860">
+  ![frontend](https://github.com/user-attachments/assets/60f521c6-2ca8-4fb7-ab1a-5d915fb6c46f)
 
   ```
-  git clone https://github.com/SistemBasisData2023/QueueEase.git
+  git clone https://github.com/FauzanHandoyo/E-Learning.git
   ```
 
 - Run npm install to install all dependencies
@@ -77,13 +77,13 @@ git clone
   ```
   npm run dev
   ```
-   <img width="288" alt="image" src="https://github.com/SistemBasisData2023/QueueEase/assets/113244831/a22d9c66-4e36-445f-9d48-31807f399a51">
+   ![Runfrontend](https://github.com/user-attachments/assets/6605a904-1108-4ac7-a008-73986f9696b2)
 
 ## Backend
 
 - Ensure You’re on the right folder
 
-  <img width="162" alt="image" src="https://github.com/SistemBasisData2023/QueueEase/assets/113244831/634c08fa-b33a-4c19-be0a-868e18e21e21">
+  ![Backend](https://github.com/user-attachments/assets/3f33eacf-2b99-445c-aa10-54c0d52f21a5)
 
 - Run npm install to install all dependencies
   ```
@@ -91,7 +91,7 @@ git clone
   ```
 - Create an .env file in your project root folder and add your variables.
 
-  <img width="187" alt="image" src="https://github.com/SistemBasisData2023/QueueEase/assets/113244831/c6fd8cef-e5dd-4ec7-8fbf-81a72eb4d8c6">
+  ![env](https://github.com/user-attachments/assets/2cf6eaff-6ddc-423d-b24f-2b3f715e3576)
 
 - Insert Database Variables
 
@@ -99,7 +99,9 @@ git clone
   ```
    npm run start
   ```
-
+# 💻 Progress Report:
+![image]()
+![image]()
 
 
 
