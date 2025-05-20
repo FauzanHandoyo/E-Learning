@@ -14,12 +14,11 @@ export default function InstructorCourses() {
     const fetchInstructorCourses = async () => {
       try {
         setLoading(true);
-        // Use the correct API endpoint - changed from /users/${user.id}/instructor-courses to /courses/instructor
         const response = await api.get('/courses/instructor');
         setCourses(response.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error f etching instructor courses:', err);
+        console.error('Error fetching instructor courses:', err);
         setError('Failed to load your courses. Please try again.');
         setLoading(false);
       }
@@ -106,16 +105,19 @@ export default function InstructorCourses() {
                 <h3 className="absolute bottom-0 left-0 text-white font-semibold text-xl p-4">
                   {course.title}
                 </h3>
+                {course.category_name && (
+                  <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                    {course.category_name}
+                  </span>
+                )}
               </div>
               
               <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center mb-2">
                   <span className="text-sm text-gray-500">
                     {course.students_count || 0} student{course.students_count !== 1 ? 's' : ''}
                   </span>
-                  <span className="text-sm font-semibold text-green-600">
-                    ${course.price || 0}
-                  </span>
+                  {/* Price display removed */}
                 </div>
                 
                 <p className="text-gray-600 line-clamp-2 mb-4">

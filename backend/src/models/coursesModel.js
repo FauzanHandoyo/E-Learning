@@ -34,15 +34,45 @@ const Courses = {
         return rows[0];
     },
 
-    update: async (id, { title, description, price }) => {
-        const query = `
+    update: async (id, { title, description, category_id }) => {
+        try {
+            // Build the query dynamically based on what fields are provided
+            const updates = [];
+            const values = [];
+            
+            if (title !== undefined) {
+            updates.push(`title = $${updates.length + 1}`);
+            values.push(title);
+            }
+            
+            if (description !== undefined) {
+            updates.push(`description = $${updates.length + 1}`);
+            values.push(description);
+            }
+            
+            if (category_id !== undefined) {
+            updates.push(`category_id = $${updates.length + 1}`);
+            values.push(category_id);
+            }
+            
+            // Always update the timestamp
+            updates.push(`updated_at = NOW()`);
+            
+            // Add the course ID as the last parameter
+            values.push(id);
+            
+            const query = `
             UPDATE courses
-            SET title = $1, description = $2, price = $3, updated_at = NOW()
-            WHERE id = $4
+            SET ${updates.join(', ')}
+            WHERE id = $${values.length}
             RETURNING *`;
-        const { rows } = await pool.query(query, [title, description, price, id]);
-        return rows[0];
-    },
+            
+            const { rows } = await pool.query(query, values);
+            return rows[0];
+        } catch (error) {
+            throw error;
+        }
+        },
 
     getEnrolledCourses: async (userId) => {
         try {

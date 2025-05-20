@@ -8,6 +8,6 @@ router.get('/instructor', verifyToken, coursesController.getInstructorCourses)
 router.post('/', coursesController.createCourse);
 router.get('/', coursesController.getAllCourses);
 router.get('/:id', coursesController.getCourseById);
-
+router.put('/:courseId', coursesController.updateCourse);
 
 module.exports = router;

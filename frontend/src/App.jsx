@@ -12,6 +12,7 @@ import EnrolledCourses from './pages/EnrolledCourses'; // New import
 import UserProfile from './pages/ProfilePage';
 import InstructorCourses from './pages/instructor/InstructorCourses';
 import CreateCourse from './pages/instructor/CreateCourse';
+import EditCourse from './pages/instructor/EditCourse';
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="/instructor" element={<Navigate to="/main" replace />} />
               <Route path="/instructor/courses" element={<InstructorCourses />} />
               <Route path="/instructor/create-course" element={<CreateCourse />} />
+              <Route path="/instructor/courses/:courseId/edit" element={<EditCourse />} />
             </Route>
 
             {/* 404 Not Found */}

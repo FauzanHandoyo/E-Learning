@@ -66,27 +66,34 @@ const getCourseById = async (req, res) => {
 };
 
 const updateCourse = async (req, res) => {
+  try {
     const { courseId } = req.params;
-    const { title, description, price } = req.body;
-    const instructorId = req.body.instructor_id; // Ensure the instructor ID is passed in the request
+    const { title, description, category_id, instructor_id } = req.body;
 
-    try {
-        // Validate that the course exists and belongs to the instructor
-        const course = await Courses.findById(courseId);
-        if (!course) {
-            return res.status(404).json({ message: 'Course not found.' });
-        }
-        if (course.instructor_id !== instructorId) {
-            return res.status(403).json({ message: 'You are not authorized to edit this course.' });
-        }
-
-        // Update the course
-        const updatedCourse = await Courses.update(courseId, { title, description, price });
-        res.status(200).json({ message: 'Course updated successfully.', course: updatedCourse });
-    } catch (error) {
-        console.error('Error updating course:', error);
-        res.status(500).json({ message: 'Error updating course', error });
+    // First, check if the course exists
+    const course = await Courses.findById(courseId);
+    
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
     }
+
+    // Check if the user is the instructor of this course
+    if (course.instructor_id !== instructor_id) {
+      return res.status(403).json({ message: 'You do not have permission to update this course' });
+    }
+
+    // Update the course
+    const updatedCourse = await Courses.update(courseId, { 
+      title, 
+      description, 
+      category_id 
+    });
+
+    res.status(200).json(updatedCourse);
+  } catch (error) {
+    console.error('Error updating course:', error);
+    res.status(500).json({ message: 'Failed to update course', error: error.message });
+  }
 };
 
 // Update the getEnrolledCourses function or add it if it doesn't exist

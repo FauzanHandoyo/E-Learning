@@ -1,37 +1,63 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
-export default function CreateCourse() {
+export default function EditCourse() {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '0', // Default to zero
     category_id: ''
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [saveLoading, setSaveLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-  const { user } = useAuth();
-  const navigate = useNavigate();
   
   // For title tips
   const [showTitleTips, setShowTitleTips] = useState(false);
 
-  // Fetch categories when component mounts
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/categories');
-        setCategories(response.data);
+        setLoading(true);
+        
+        // Fetch course details
+        const courseResponse = await api.get(`/courses/${courseId}`);
+        const course = courseResponse.data;
+        
+        // Check if the logged-in instructor is the owner of this course
+        if (user?.id !== course.instructor_id) {
+          setError('You do not have permission to edit this course');
+          setLoading(false);
+          return;
+        }
+        
+        // Fetch categories
+        const categoriesResponse = await api.get('/categories');
+        setCategories(categoriesResponse.data);
+        
+        // Set form data
+        setFormData({
+          title: course.title || '',
+          description: course.description || '',
+          category_id: course.category_id || ''
+        });
+        
+        setLoading(false);
       } catch (err) {
-        console.error('Error fetching categories:', err);
+        console.error('Error fetching course data:', err);
+        setError('Failed to load course details. Please try again.');
+        setLoading(false);
       }
     };
 
-    fetchCategories();
-  }, []);
+    fetchData();
+  }, [courseId, user?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,38 +81,55 @@ export default function CreateCourse() {
       return;
     }
 
-    if (!formData.category_id) {
-      setError('Please select a category');
-      return;
-    }
-
     try {
-      setLoading(true);
+      setSaveLoading(true);
       setError('');
 
-      // Create course with the current user as instructor
-      const courseData = {
-        ...formData,
-        instructor_id: user.id,
-        price: 0, // Always set price to 0
-        category_id: parseInt(formData.category_id)
+      const updatedData = {
+        title: formData.title,
+        description: formData.description,
+        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        instructor_id: user.id
       };
 
-      await api.post('/courses', courseData);
+      await api.put(`/courses/${courseId}`, updatedData);
       
       // Redirect to instructor courses page
       navigate('/instructor/courses');
     } catch (err) {
-      console.error('Error creating course:', err);
-      setError(err.response?.data?.message || 'Failed to create course. Please try again.');
+      console.error('Error updating course:', err);
+      setError(err.response?.data?.message || 'Failed to update course. Please try again.');
     } finally {
-      setLoading(false);
+      setSaveLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error && error === 'You do not have permission to edit this course') {
+    return (
+      <div className="text-center p-8">
+        <div className="text-red-500 font-semibold mb-4">Access Denied</div>
+        <p className="text-gray-700 mb-4">You do not have permission to edit this course.</p>
+        <button 
+          onClick={() => navigate('/instructor/courses')} 
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          Back to My Courses
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Create New Course</h1>
+      <h1 className="text-3xl font-bold mb-8">Edit Course</h1>
       
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
         {error && (
@@ -127,7 +170,6 @@ export default function CreateCourse() {
               value={formData.title}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., Complete Web Development Bootcamp"
               required
             />
           </div>
@@ -165,28 +207,25 @@ export default function CreateCourse() {
               onChange={handleChange}
               rows="4"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Describe your course content and what students will learn"
               required
             />
           </div>
-          
-          {/* Price field removed from UI but kept in form data */}
           
           <div className="flex items-center justify-end">
             <button
               type="button"
               onClick={() => navigate('/instructor/courses')}
               className="px-6 py-2 mr-4 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              disabled={loading}
+              disabled={saveLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
-              disabled={loading}
+              disabled={saveLoading}
             >
-              {loading ? 'Creating...' : 'Create Course'}
+              {saveLoading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
