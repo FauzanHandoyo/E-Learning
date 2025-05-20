@@ -102,20 +102,32 @@ const getEnrolledCourses = async (req, res) => {
     const userId = req.user.id; // Get from JWT token
     
     const query = `
-      SELECT c.*, u.username as instructor_name, e.progress
+      SELECT 
+        c.id AS course_id, 
+        c.title AS course_title, 
+        c.description AS course_description,
+        c.image_url, 
+        u.username AS instructor_name,
+        cat.name AS category_name,
+        e.progress,
+        e.enrolled_at
       FROM enrollments e
       JOIN courses c ON e.course_id = c.id
       JOIN users u ON c.instructor_id = u.id
+      LEFT JOIN categories cat ON c.category_id = cat.id
       WHERE e.user_id = $1
+      ORDER BY e.enrolled_at DESC
     `;
     
     const { rows } = await pool.query(query, [userId]);
+    
+    console.log('Enrolled courses data:', rows); // Debug log to check data
+    
     res.status(200).json(rows);
   } catch (error) {
     console.error('Error fetching enrolled courses:', error);
     res.status(500).json({ message: 'Failed to fetch enrolled courses' });
   }
-  
 };
 
 const getInstructorCourses = async (req, res) => {

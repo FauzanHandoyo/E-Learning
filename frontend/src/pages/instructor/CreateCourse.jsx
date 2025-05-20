@@ -7,12 +7,13 @@ export default function CreateCourse() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '0', // Default to zero
+    price: '0',
     category_id: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState([]);
+  const [fileSize, setFileSize] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   

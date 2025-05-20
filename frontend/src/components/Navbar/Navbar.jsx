@@ -36,7 +36,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-container">
         {/* Logo */}
-        <Link to="/" className="nav-logo flex items-center">
+        <Link className="nav-logo flex items-center">
           <img src={logo} alt="Logo" className="h-10 w-10 rounded-full border-2 border-blue-500 mr-5" />
           E-Learning
         </Link>
@@ -102,16 +102,6 @@ const Navbar = () => {
                         }}
                       >
                         Create Course
-                      </Link>
-                      <Link 
-                        to="/instructor/analytics" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => {
-                          toggleDropdown();
-                          toggleMenu();
-                        }}
-                      >
-                        Analytics
                       </Link>
                     </div>
                   )}

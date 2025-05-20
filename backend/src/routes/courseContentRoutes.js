@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const courseContentController = require('../controllers/courseContentController');
+const { verifyToken } = require('../middlewares/authMiddleware');
 
-// Route to create new course content
-router.post('/', courseContentController.createContent);
+// Create new content with PDF upload
+router.post('/', verifyToken, courseContentController.createContent);
 
-// Route to get all content for a specific course
+// Get all content for a course
 router.get('/course/:course_id', courseContentController.getContentByCourseId);
 
-// Route to get specific content by its ID
+// Get specific content by ID
 router.get('/:id', courseContentController.getContentById);
 
-// Route to delete course content by ID
-router.delete('/:id', courseContentController.deleteContent);
+// Delete content
+router.delete('/:id', verifyToken, courseContentController.deleteContent);
 
 module.exports = router;

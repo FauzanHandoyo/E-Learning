@@ -28,18 +28,18 @@ CREATE TABLE courses ( -- for courses created by instructors
 
 CREATE TABLE course_content (
     id SERIAL PRIMARY KEY,                
-    course_id INT NOT NULL,               -- References the course the content belongs to
-    title VARCHAR(255) NOT NULL,          -- Title of the video content
-    content_url TEXT NOT NULL,            -- URL or path to the video file
-    created_at TIMESTAMP DEFAULT NOW(),   -- Timestamp when the content was added
+    course_id INT NOT NULL,               
+    title VARCHAR(255) NOT NULL,          
+    content_url TEXT NOT NULL,            
+    created_at TIMESTAMP DEFAULT NOW(),   
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
 CREATE TABLE enrollments (
-    id SERIAL PRIMARY KEY,                -- Unique identifier for each enrollment
-    user_id INT NOT NULL,                 -- References the user who enrolled
-    course_id INT NOT NULL,               -- References the course the user enrolled in
-    enrolled_at TIMESTAMP DEFAULT NOW(),  -- Timestamp when the enrollment occurred
+    id SERIAL PRIMARY KEY,                
+    user_id INT NOT NULL,                 
+    course_id INT NOT NULL,               
+    enrolled_at TIMESTAMP DEFAULT NOW(),  
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
@@ -50,5 +50,5 @@ CREATE TABLE categories (
     description TEXT
 );
 
--- Add this to your migration script or run directly
+
 ALTER TABLE courses ADD COLUMN image_url TEXT;

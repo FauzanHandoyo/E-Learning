@@ -8,6 +8,6 @@ const { verifyToken, checkRole } = require('../middlewares/authMiddleware');
 router.post('/apply', verifyToken, checkRole(['student']), instructorController.applyToBeInstructor);
 
 // Route to edit a course (instructor only)
-router.put('/courses/:courseId', coursesController.updateCourse);
+router.put('/courses/:courseId', verifyToken, coursesController.updateCourse);
 
 module.exports = router;

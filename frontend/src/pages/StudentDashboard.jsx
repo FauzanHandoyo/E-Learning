@@ -19,12 +19,10 @@ export default function MainDashboard() {
         const coursesResponse = await api.get('/courses');
         setCourses(coursesResponse.data);
         
-        // If user is logged in, fetch their enrolled courses
+        
         if (user) {
           try {
-            // Fetch enrolled course IDs to determine which courses to show "Continue" vs "Enroll"
             const enrolledResponse = await api.get('/users/enrolled');
-            // Extract just the course IDs from the enrolled courses
             const enrolledIds = enrolledResponse.data.map(course => course.id || course.course_id);
             setEnrolledCourseIds(enrolledIds);
           } catch (enrollError) {
@@ -44,7 +42,7 @@ export default function MainDashboard() {
   }, [user]);
   
   const handleEnrollSuccess = (courseId) => {
-    // Add the new course ID to the enrolled courses list
+    
     setEnrolledCourseIds(prev => [...prev, courseId]);
   };
 
@@ -56,7 +54,7 @@ export default function MainDashboard() {
   
   if (error) return <div className="text-red-500 p-8">{error}</div>;
   
-  // Filter out courses that the user is already enrolled in
+  
   const availableCourses = courses.filter(course => !enrolledCourseIds.includes(course.id));
   
   if (availableCourses.length === 0) {

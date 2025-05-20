@@ -13,6 +13,8 @@ import UserProfile from './pages/ProfilePage';
 import InstructorCourses from './pages/instructor/InstructorCourses';
 import CreateCourse from './pages/instructor/CreateCourse';
 import EditCourse from './pages/instructor/EditCourse';
+import CourseView from './pages/CourseView';
+import CreateCourseContent from './pages/instructor/CreateCourseContent';
 
 export default function App() {
   return (
@@ -26,11 +28,13 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-             {/* Protected Routes for all authenticated users */}
+            {/* Protected Routes for all authenticated users */}
             <Route element={<ProtectedRoute allowedRoles={['student', 'instructor']} />}>
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/main" element={<StudentDashboard />} /> {/* Renamed from '/student' to '/main' */}
               <Route path="/enrolled" element={<EnrolledCourses />} />
+              {/* Add CourseView route here */}
+              <Route path="/courses/:courseId" element={<CourseView />} />
             </Route>
 
             {/* Keep the original '/student' route for backward compatibility */}
@@ -44,6 +48,7 @@ export default function App() {
               <Route path="/instructor/courses" element={<InstructorCourses />} />
               <Route path="/instructor/create-course" element={<CreateCourse />} />
               <Route path="/instructor/courses/:courseId/edit" element={<EditCourse />} />
+              <Route path='/instructor/courses/:courseId/content' element={<CreateCourseContent />} />
             </Route>
 
             {/* 404 Not Found */}
