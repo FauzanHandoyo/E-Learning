@@ -62,6 +62,41 @@
   color: #2563eb;
 }
 
+/* New Styles for Buttons and Links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  border: 1px solid #1976d2;
+}
+
+.nav-btn-login {
+  background: #fff;
+  color: #1976d2;
+}
+
+.nav-btn-login:hover {
+  background: #e3f2fd;
+}
+
+.nav-btn-register {
+  background: #1976d2;
+  color: #fff;
+  margin-left: 4px;
+}
+
+.nav-btn-register:hover {
+  background: #1565c0;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .nav-mobile-menu {

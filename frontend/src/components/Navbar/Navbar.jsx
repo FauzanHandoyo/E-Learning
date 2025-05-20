@@ -135,16 +135,10 @@ const Navbar = () => {
             </>
           ) : (
             // Navbar for guests
-            <>
-              <div className="flex items-center space-x-4">
-                <Link to="/login" className="nav-link" onClick={toggleMenu}>
-                  Login
-                </Link>
-                <Link to="/register" className="nav-link" onClick={toggleMenu}>
-                  Register
-                </Link>
-              </div>
-            </>
+            <div className="navbar-links">
+              <a href="/login" className="nav-btn nav-btn-login">Login</a>
+              <a href="/register" className="nav-btn nav-btn-register">Register</a>
+            </div>
           )}
         </div>
       </div>
