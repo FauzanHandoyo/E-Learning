@@ -43,7 +43,7 @@ Setelah melakukan login, tampilan antarmuka pengguna (UI) akan disesuaikan sesua
 
 # :bar_chart: Diagram
 UML
-![image](![Image](https://github.com/user-attachments/assets/fbcabda8-b5e0-40bf-9c84-f7d3d17bafc3))
+![Image](https://github.com/user-attachments/assets/11919396-14b5-4794-a587-bee88ad28371)
 
 ERD
 ![Image](https://github.com/user-attachments/assets/a7986ac7-47e7-49a9-a62d-e0b68f1d2b96)
