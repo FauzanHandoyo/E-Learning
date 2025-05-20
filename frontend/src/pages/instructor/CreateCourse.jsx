@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -18,6 +18,11 @@ export default function CreateCourse() {
   
   // For title tips
   const [showTitleTips, setShowTitleTips] = useState(false);
+  
+  // For course image
+  const [courseImage, setCourseImage] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Fetch categories when component mounts
   useEffect(() => {
@@ -39,6 +44,79 @@ export default function CreateCourse() {
       ...formData,
       [name]: value
     });
+  };
+  
+  // Image compression function
+  const compressImage = async (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          
+          // Calculate new dimensions (max 800px width/height while maintaining aspect ratio)
+          let width = img.width;
+          let height = img.height;
+          const maxSize = 800;
+          
+          if (width > height && width > maxSize) {
+            height = Math.round((height * maxSize) / width);
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = Math.round((width * maxSize) / height);
+            height = maxSize;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Get compressed image as base64 string (0.7 quality for better compression)
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(compressedBase64);
+        };
+      };
+    });
+  };
+  
+  // Handle file upload for course image
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.match('image.*')) {
+        setError('Please select an image file (JPG, PNG, etc.)');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
+
+      try {
+        setUploadingImage(true);
+        
+        // Compress the image
+        const compressedBase64 = await compressImage(file);
+        
+        // Update UI preview
+        setCourseImage(compressedBase64);
+        setError('');
+      } catch (err) {
+        console.error('Error processing image:', err);
+        setError('Failed to process image. Please try again.');
+      } finally {
+        setUploadingImage(false);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -72,7 +150,21 @@ export default function CreateCourse() {
         category_id: parseInt(formData.category_id)
       };
 
-      await api.post('/courses', courseData);
+      const response = await api.post('/courses', courseData);
+      const createdCourse = response.data.course;
+      
+      // If we have an image, upload it
+      if (courseImage) {
+        try {
+          await api.post('/courses/upload-image', {
+            courseId: createdCourse.id,
+            data: courseImage
+          });
+        } catch (imageError) {
+          console.error('Error uploading course image:', imageError);
+          // We'll continue even if image upload fails
+        }
+      }
       
       // Redirect to instructor courses page
       navigate('/instructor/courses');
@@ -96,6 +188,66 @@ export default function CreateCourse() {
         )}
         
         <form onSubmit={handleSubmit}>
+          {/* Course Image Upload */}
+          <div className="mb-6">
+          <label className="block text-gray-700 font-medium mb-2">
+            Course Image
+          </label>
+          <div className="border border-gray-300 rounded-lg p-6 text-center">
+            {courseImage ? (
+              <div className="relative">
+                <img 
+                  src={courseImage} 
+                  alt="Course preview" 
+                  className="max-h-48 mx-auto rounded-lg"
+                />
+                <div className="mt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setCourseImage(null)}
+                    className="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5"
+                  >
+                    Remove Image
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="py-8">
+                {uploadingImage ? (
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="mb-4 text-gray-500">Click to upload course image</p>
+                    <p className="text-xs text-gray-400 mb-4">(Recommended: 800x400px)</p>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current.click()}
+                      className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+                    >
+                      Choose File
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+          </div>
+          {fileSize && (
+            <p className="text-xs text-gray-500 mt-1">
+              Selected image size: {fileSize} {' '}
+              {uploadingImage ? '(Compressing...)' : ''}
+            </p>
+          )}
+        </div>
+
           <div className="mb-6">
             <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
               Course Title*

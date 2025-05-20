@@ -15,7 +15,6 @@ const CourseCard = ({ course, isEnrolled = false, onEnrollSuccess, progress = 0 
       setEnrollError('');
       
       const courseId = course.id || course.course_id;
-      // Send only the course_id, user_id will be extracted from JWT token in the backend
       await api.post('/enrollments', { course_id: courseId });
       
       if (onEnrollSuccess) {
@@ -36,6 +35,16 @@ const CourseCard = ({ course, isEnrolled = false, onEnrollSuccess, progress = 0 
       className="bg-white rounded-lg shadow-md overflow-hidden"
     >
       <div className="h-40 bg-gray-200 relative">
+        {course.image_url ? (
+          <img 
+            src={course.image_url} 
+            alt={course.title || course.course_title} 
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          // Default gradient background if no image
+          <div className="w-full h-full bg-gradient-to-r from-blue-400 to-blue-600"></div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         <h3 className="absolute bottom-0 left-0 p-4 text-xl font-semibold text-white">
           {course.title || course.course_title}

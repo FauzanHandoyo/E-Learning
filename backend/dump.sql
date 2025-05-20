@@ -49,3 +49,6 @@ CREATE TABLE categories (
     name VARCHAR(100) NOT NULL,
     description TEXT
 );
+
+-- Add this to your migration script or run directly
+ALTER TABLE courses ADD COLUMN image_url TEXT;

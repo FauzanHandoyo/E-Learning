@@ -25,9 +25,11 @@ export default function UserProfile() {
   });
   const [avatar, setAvatar] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef(null);
+  const [fileSize, setFileSize] = useState(null);
   
-  // New state for instructor application
+  // State for instructor application
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [applicationSuccess, setApplicationSuccess] = useState('');
@@ -39,6 +41,7 @@ export default function UserProfile() {
         if (user) {
           // Get user profile data
           const userResponse = await api.get(`/users/${user.id}`);
+          console.log('Profile data received:', userResponse.data);
           
           setProfile({
             ...userResponse.data
@@ -64,6 +67,45 @@ export default function UserProfile() {
     fetchUserProfile();
   }, [user]);
   
+  // Image compression function
+  const compressImage = async (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          
+          // Calculate new dimensions (max 800px width/height while maintaining aspect ratio)
+          let width = img.width;
+          let height = img.height;
+          const maxSize = 800;
+          
+          if (width > height && width > maxSize) {
+            height = Math.round((height * maxSize) / width);
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = Math.round((width * maxSize) / height);
+            height = maxSize;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Get compressed image as base64 string (0.7 quality for better compression)
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(compressedBase64);
+        };
+      };
+    });
+  };
+  
   // Handle instructor application
   const handleApplyInstructor = async (e) => {
     e.preventDefault();
@@ -80,7 +122,7 @@ export default function UserProfile() {
       
       const response = await api.post('/instructors/apply', { termsAccepted });
       
-      setApplicationSuccess(response.data.message);
+      setApplicationSuccess(response.data.message || 'Application submitted successfully!');
       
       // Update user in auth context and localStorage
       const updatedUser = response.data.user;
@@ -92,8 +134,10 @@ export default function UserProfile() {
         localStorage.setItem('user', JSON.stringify(storedUser));
       }
       
-      // Update auth context
-      setUser(prev => ({...prev, role: 'instructor'}));
+      // Update auth context if setUser is available
+      if (typeof setUser === 'function') {
+        setUser(prev => ({...prev, role: 'instructor'}));
+      }
       
       // Reload after a delay to show updated role
       setTimeout(() => {
@@ -115,21 +159,49 @@ export default function UserProfile() {
     });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setAvatar(base64String); // For UI preview
+      // Calculate and display file size
+      const size = (file.size / (1024 * 1024)).toFixed(2);
+      setFileSize(`${size} MB`);
+      
+      // Validate file type
+      if (!file.type.match('image.*')) {
+        setError('Please select an image file (JPG, PNG, etc.)');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
+
+      try {
+        // Show compression is happening
+        setUploadingAvatar(true);
         
-        // Store the base64 string for upload
-        setFormData({
-          ...formData,
-          avatarBase64: base64String
-        });
-      };
-      reader.readAsDataURL(file);
+        // Compress the image
+        const compressedBase64 = await compressImage(file);
+        
+        // Update UI preview
+        setAvatar(compressedBase64);
+        
+        // Store the compressed base64 string for upload
+        setFormData(prev => ({
+          ...prev,
+          avatarBase64: compressedBase64
+        }));
+        
+        // Clear any previous errors
+        setError('');
+      } catch (err) {
+        console.error('Error processing image:', err);
+        setError('Failed to process image. Please try again.');
+      } finally {
+        setUploadingAvatar(false);
+      }
     }
   };
 
@@ -150,21 +222,46 @@ export default function UserProfile() {
       // If there's a new avatar image, upload it first
       if (formData.avatarBase64) {
         try {
+          setUploadingAvatar(true);
+          console.log('Uploading avatar to Cloudinary...');
+          
           // Upload the image to Cloudinary
           const uploadResponse = await api.post('/users/upload-avatar', {
             data: formData.avatarBase64
           });
           
+          console.log('Upload successful:', uploadResponse.data);
+          
           // Update local state with the new avatar URL
-          setProfile({
-            ...profile,
+          setProfile(prev => ({
+            ...prev,
             avatar_url: uploadResponse.data.imageUrl
-          });
+          }));
+          
+          // Update the avatar in localStorage
+          const storedUser = JSON.parse(localStorage.getItem('user'));
+          if (storedUser) {
+            storedUser.avatar_url = uploadResponse.data.imageUrl;
+            localStorage.setItem('user', JSON.stringify(storedUser));
+          }
+          
+          // Update auth context with new avatar - safe approach
+          if (typeof setUser === 'function') {
+            setUser(prevUser => ({
+              ...prevUser,
+              avatar_url: uploadResponse.data.imageUrl
+            }));
+          } else {
+            console.warn('setUser is not available as a function');
+          }
+          
         } catch (err) {
           console.error('Error uploading avatar:', err);
           setError('Failed to upload avatar. Please try again.');
           setLoading(false);
           return;
+        } finally {
+          setUploadingAvatar(false);
         }
       }
 
@@ -179,25 +276,52 @@ export default function UserProfile() {
         updateData.newPassword = formData.newPassword;
       }
 
+      console.log('Updating profile data...');
       const response = await api.put(`/users/${user.id}`, updateData);
+      console.log('Profile update response:', response.data);
       
-      setProfile({
-        ...profile,
+      // Update profile state
+      setProfile(prev => ({
+        ...prev,
         username: response.data.username,
         email: response.data.email
-      });
+      }));
+      
+      // Update auth context - only if setUser is available
+      if (typeof setUser === 'function') {
+        setUser(prevUser => ({
+          ...prevUser,
+          username: response.data.username,
+          email: response.data.email
+        }));
+      }
+      
+      // Update localStorage
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      if (storedUser) {
+        storedUser.username = response.data.username;
+        storedUser.email = response.data.email;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+      }
       
       setUpdateSuccess(true);
       setIsEditing(false);
       
       // Reset form fields
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
         avatarBase64: null
-      });
+      }));
+      
+      // Clear file size display
+      setFileSize(null);
+      
+      // Clear preview avatar to show the updated one from the server
+      setAvatar(null);
+      
     } catch (err) {
       console.error('Error updating profile:', err);
       setError(err.response?.data?.message || 'Failed to update profile');
@@ -238,21 +362,32 @@ export default function UserProfile() {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {/* Profile Header */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-6 flex flex-col md:flex-row items-center">
-          <div className="relative w-24 h-24 rounded-full bg-white flex items-center justify-center mb-4 md:mb-0 md:mr-6 overflow-hidden">
-            <img 
-              src={avatar || profile.avatar_url}
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
+          <div className="relative w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-4 md:mb-0 md:mr-6 overflow-hidden border-4 border-white shadow-md">
+            {avatar || profile.avatar_url ? (
+              <img 
+                src={avatar || profile.avatar_url}
+                alt="Profile" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            )}
             {isEditing && (
               <button
                 type="button"
-                className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1 hover:bg-blue-700"
+                className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1.5 hover:bg-blue-700 transition-colors border-2 border-white"
                 onClick={() => fileInputRef.current.click()}
+                disabled={uploadingAvatar}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg>
+                {uploadingAvatar ? (
+                  <div className="h-5 w-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                )}
               </button>
             )}
           </div>
@@ -276,9 +411,7 @@ export default function UserProfile() {
         {/* Profile Content */}
         <div className="p-6">
           {isEditing ? (
-            // Edit Profile Form
             <form onSubmit={handleUpdateProfile} className="space-y-6">
-              {/* Hidden file input for avatar */}
               <input
                 type="file"
                 ref={fileInputRef}
@@ -286,6 +419,13 @@ export default function UserProfile() {
                 accept="image/*"
                 className="hidden"
               />
+              
+              {fileSize && (
+                <p className="text-sm text-gray-500 mb-4">
+                  Selected image size: {fileSize} {' '}
+                  {uploadingAvatar ? '(Compressing...)' : '(Compressed)'}
+                </p>
+              )}
               
               <div>
                 <label className="text-sm font-medium text-gray-700 block mb-1">Username</label>
@@ -387,7 +527,32 @@ export default function UserProfile() {
 
                 {user?.role === 'instructor' && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Instructor Stats</h3>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-gray-800">Instructor Stats</h3>
+                      <button
+                        onClick={async () => {
+                          try {
+                            setLoading(true);
+                            const userResponse = await api.get(`/users/${user.id}`);
+                            setProfile(prev => ({
+                              ...prev,
+                              courses_count: userResponse.data.courses_count || 0,
+                              students_count: userResponse.data.students_count || 0
+                            }));
+                          } catch (err) {
+                            console.error('Error refreshing stats:', err);
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                        className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Refresh
+                      </button>
+                    </div>
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-md">
                         <p className="text-sm text-gray-500">Total Courses</p>
