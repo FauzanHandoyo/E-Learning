@@ -26,6 +26,33 @@ const getUserById = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // If the user is an instructor, get additional stats
+    if (user.role === 'instructor') {
+      try {
+        // Get count of courses created by this instructor
+        const coursesQuery = `
+          SELECT COUNT(*) as courses_count 
+          FROM courses 
+          WHERE instructor_id = $1`;
+        const coursesResult = await pool.query(coursesQuery, [userId]);
+        user.courses_count = parseInt(coursesResult.rows[0].courses_count, 10);
+        
+        // Get count of students enrolled in this instructor's courses
+        const studentsQuery = `
+          SELECT COUNT(DISTINCT e.user_id) as students_count 
+          FROM enrollments e
+          JOIN courses c ON e.course_id = c.id
+          WHERE c.instructor_id = $1`;
+        const studentsResult = await pool.query(studentsQuery, [userId]);
+        user.students_count = parseInt(studentsResult.rows[0].students_count, 10);
+      } catch (statError) {
+        console.error('Error fetching instructor stats:', statError);
+        // Don't fail the entire request if stats can't be fetched
+        user.courses_count = 0;
+        user.students_count = 0;
+      }
+    }
+
     res.status(200).json(user);
   } catch (error) {
     console.error('Error fetching user:', error);

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import api from '../services/api';
 
 export default function UserProfile() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [profile, setProfile] = useState({
     username: '',
     email: '',
@@ -26,6 +26,12 @@ export default function UserProfile() {
   const [avatar, setAvatar] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const fileInputRef = useRef(null);
+  
+  // New state for instructor application
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+  const [applicationSuccess, setApplicationSuccess] = useState('');
+  const [applicationError, setApplicationError] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -57,6 +63,50 @@ export default function UserProfile() {
 
     fetchUserProfile();
   }, [user]);
+  
+  // Handle instructor application
+  const handleApplyInstructor = async (e) => {
+    e.preventDefault();
+    
+    if (!termsAccepted) {
+      setApplicationError('You must accept the terms to become an instructor');
+      return;
+    }
+    
+    try {
+      setIsApplying(true);
+      setApplicationError('');
+      setApplicationSuccess('');
+      
+      const response = await api.post('/instructors/apply', { termsAccepted });
+      
+      setApplicationSuccess(response.data.message);
+      
+      // Update user in auth context and localStorage
+      const updatedUser = response.data.user;
+      
+      // Update localStorage
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      if (storedUser) {
+        storedUser.role = 'instructor';
+        localStorage.setItem('user', JSON.stringify(storedUser));
+      }
+      
+      // Update auth context
+      setUser(prev => ({...prev, role: 'instructor'}));
+      
+      // Reload after a delay to show updated role
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      setApplicationError(error.response?.data?.message || 'Failed to process your application.');
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -309,8 +359,6 @@ export default function UserProfile() {
               </div>
             </form>
           ) : (
-            // Profile Info (unchanged part of the code)
-            // ... rest of your existing profile display code
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -355,23 +403,48 @@ export default function UserProfile() {
               </div>
 
               {user?.role === 'student' && (
-                <div className="mt-8">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Apply to be an Instructor</h3>
-                  <p className="text-gray-600 mb-4">Share your knowledge with others by becoming an instructor.</p>
-                  <button 
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium transition duration-200"
-                    onClick={async () => {
-                      try {
-                        await api.post('/instructors/apply');
-                        alert('Application submitted! We will review your application shortly.');
-                      } catch (err) {
-                        console.error('Error submitting application:', err);
-                        alert('Failed to submit application. Please try again later.');
-                      }
-                    }}
-                  >
-                    Apply Now
-                  </button>
+                <div className="mt-8 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Apply to be an Instructor</h3>
+                  <p className="text-gray-600 mb-4">
+                    Share your knowledge with others by becoming an instructor.
+                  </p>
+                  
+                  {applicationSuccess ? (
+                    <div className="p-3 bg-green-50 text-green-700 rounded-md mb-4">
+                      {applicationSuccess}
+                    </div>
+                  ) : (
+                    <form onSubmit={handleApplyInstructor}>
+                      <div className="mb-4">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={termsAccepted}
+                            onChange={() => setTermsAccepted(!termsAccepted)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="ml-2 text-sm text-gray-700">
+                            I agree to the instructor terms and conditions. I will create high-quality 
+                            educational content and follow all platform guidelines.
+                          </span>
+                        </label>
+                      </div>
+                      
+                      {applicationError && (
+                        <div className="p-3 bg-red-50 text-red-700 rounded-md mb-4">
+                          {applicationError}
+                        </div>
+                      )}
+                      
+                      <button
+                        type="submit"
+                        disabled={isApplying || !termsAccepted}
+                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium transition duration-200 disabled:bg-green-300"
+                      >
+                        {isApplying ? 'Processing...' : 'Apply Now'}
+                      </button>
+                    </form>
+                  )}
                 </div>
               )}
             </>

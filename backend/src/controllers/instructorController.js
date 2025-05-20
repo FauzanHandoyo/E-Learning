@@ -1,42 +1,56 @@
-const pool = require('../../db'); // Import the database connection
+const pool = require('../../db');
 
-// Apply to become an instructor (auto-accept)
-const applyInstructor = async (req, res) => {
-    const { id } = req.params; // User ID
+// Function to handle instructor application
+const applyToBeInstructor = async (req, res) => {
     try {
-        // Check if the user is already an instructor
-        const userQuery = 'SELECT role FROM users WHERE id = $1';
-        const { rows: userRows } = await pool.query(userQuery, [id]);
-
-        if (userRows.length === 0) {
-            return res.status(404).json({ message: 'User not found.' });
+        const userId = req.user.id;
+        const { termsAccepted } = req.body;
+        
+        // Validate terms acceptance
+        if (!termsAccepted) {
+            return res.status(400).json({ 
+                message: 'You must accept the terms to become an instructor' 
+            });
         }
 
-        if (userRows[0].role === 'instructor') {
-            return res.status(400).json({ message: 'User is already an instructor.' });
+        // Check if user exists and is a student
+        const userQuery = `SELECT id, username, email, role FROM users WHERE id = $1`;
+        const userResult = await pool.query(userQuery, [userId]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        if (userResult.rows[0].role === 'instructor') {
+            return res.status(400).json({ message: 'You are already an instructor' });
+        }
+        
+        if (userResult.rows[0].role !== 'student') {
+            return res.status(400).json({ message: 'Only students can apply to become instructors' });
         }
 
-        // Insert a new application
-        const applicationQuery = `
-            INSERT INTO instructor_applications (user_id)
-            VALUES ($1)
-            RETURNING *`;
-        const { rows: applicationRows } = await pool.query(applicationQuery, [id]);
-
-        // Update the user's role to 'instructor'
-        const updateRoleQuery = 'UPDATE users SET role = $1 WHERE id = $2';
-        await pool.query(updateRoleQuery, ['instructor', id]);
-
-        res.status(201).json({
-            message: 'Application submitted and accepted successfully.',
-            application: applicationRows[0],
+        // Update user role to instructor
+        const updateQuery = `
+            UPDATE users 
+            SET role = 'instructor' 
+            WHERE id = $1 
+            RETURNING id, username, email, role`;
+        const result = await pool.query(updateQuery, [userId]);
+        
+        res.status(200).json({
+            message: 'Congratulations! You are now an instructor.',
+            user: result.rows[0]
         });
+        
     } catch (error) {
-        console.error('Error applying to become an instructor:', error);
-        res.status(500).json({ message: 'Error applying to become an instructor', error });
+        console.error('Error upgrading to instructor:', error);
+        res.status(500).json({ 
+            message: 'Failed to process instructor application', 
+            error: error.message 
+        });
     }
 };
 
 module.exports = {
-    applyInstructor,
+    applyToBeInstructor
 };
