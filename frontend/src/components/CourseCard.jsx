@@ -15,6 +15,7 @@ const CourseCard = ({ course, isEnrolled = false, onEnrollSuccess, progress = 0 
       setEnrollError('');
       
       const courseId = course.id || course.course_id;
+      // Send only the course_id, user_id will be extracted from JWT token in the backend
       await api.post('/enrollments', { course_id: courseId });
       
       if (onEnrollSuccess) {

@@ -18,7 +18,6 @@ export default function Register() {
     e.preventDefault();
     try {
       await register(formData);
-      navigate('/login');
     } catch (error) {
       console.error('Registration error:', error);
       alert('Registration failed: ' + error.message);
