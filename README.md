@@ -90,18 +90,7 @@ git clone https://github.com/FauzanHandoyo/E-Learning.git
 
   ![env](https://github.com/user-attachments/assets/2cf6eaff-6ddc-423d-b24f-2b3f715e3576)
 
-- .env
-  ```
-  PORT=5000
-  DATABASE_URL=postgresql://neondb_owner:npg_bVMdfEPKW48r@ep-silent-credit-a1debaaj-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-  DATABASE_SSL=false
-  FRONTEND_URL=http://localhost:5173
-  JWT_SECRET=backend
-  
-  CLOUDINARY_CLOUD_NAME=dwudxjsie
-  CLOUDINARY_API_KEY=776395665451366
-  CLOUDINARY_API_SECRET=TPA0idNVGcocEgwGbO3PEGI8RNw
-  ```
+
 
 - Insert Database Variables
 
