@@ -136,7 +136,7 @@ const Navbar = () => {
           ) : (
             // Navbar for guests
             <>
-              <div className="ml-auto">
+              <div className="flex items-center space-x-4">
                 <Link to="/login" className="nav-link" onClick={toggleMenu}>
                   Login
                 </Link>
