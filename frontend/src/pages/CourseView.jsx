@@ -67,10 +67,10 @@ export default function CourseView() {
       <div className="grid md:grid-cols-4 gap-6">
         {/* Course Content Sidebar */}
         <div className="bg-white p-4 rounded shadow">
-          <h2 className="font-bold text-lg mb-4 pb-2 border-b">Course Content</h2>
+          <h2 className="font-bold text-lg mb-4 pb-2 border-b text-blue-600">Course Content</h2>
           
           {contents.length === 0 ? (
-            <p className="text-gray-500">No content available</p>
+            <p className="text-black">No content available</p>
           ) : (
             <ul className="space-y-2">
               {contents.map((content) => (
@@ -79,8 +79,8 @@ export default function CourseView() {
                     onClick={() => setSelectedContent(content)}
                     className={`w-full text-left p-2 rounded ${
                       selectedContent?.id === content.id 
-                        ? 'bg-blue-100 font-medium' 
-                        : 'hover:bg-gray-100'
+                        ? 'bg-blue-100 font-medium text-black' 
+                        : 'hover:bg-gray-200'
                     }`}
                   >
                     {content.title}
@@ -91,23 +91,23 @@ export default function CourseView() {
           )}
         </div>
         
-        {/* Content Display Area */}
-        <div className="md:col-span-3 bg-white p-4 rounded shadow">
-          {selectedContent ? (
-            <div className="pdf-container">
-              <div className="bg-gray-100 p-3 mb-4 flex justify-between items-center">
-                <h3 className="font-medium">{selectedContent.title}</h3>
-                <a 
-                  href={selectedContent.content_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                >
-                  Open in New Tab
-                </a>
-              </div>
-              
-              {/* Direct iframe for PDF display */}
+        
+          <div className="md:col-span-3 bg-white p-4 rounded shadow">
+            {selectedContent ? (
+              <div className="pdf-container w-full">
+                <div className="bg-gray-100 p-3 mb-4 flex justify-between items-center">
+            <h3 className="font-medium text-black">{selectedContent.title}</h3>
+            <a 
+              href={selectedContent.content_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+            >
+              Open in New Tab
+            </a>
+                </div>
+                
+                {/* Direct iframe for PDF display */}
               <div className="border rounded">
                 <iframe
                   src={selectedContent.content_url}

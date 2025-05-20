@@ -506,19 +506,19 @@ export default function UserProfile() {
                   <div className="space-y-4">
                     <div>
                       <p className="text-sm text-gray-500">Username</p>
-                      <p className="font-medium">{profile.username}</p>
+                      <p className="font-medium text-gray-600">{profile.username}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium">{profile.email}</p>
+                      <p className="font-medium text-gray-600">{profile.email}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Role</p>
-                      <p className="font-medium capitalize">{profile.role}</p>
+                      <p className="font-medium capitalize text-gray-600">{profile.role}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Member Since</p>
-                      <p className="font-medium">
+                      <p className="font-medium text-gray-600">
                         {new Date(profile.created_at).toLocaleDateString()}
                       </p>
                     </div>
